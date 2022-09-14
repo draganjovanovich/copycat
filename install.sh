@@ -44,6 +44,8 @@ if ! grep -q "copycat_popup" ~/.zshrc; then
         BUFFER=\"${python_exec} /usr/local/bin/popup.py\"
         echo -e \"\033[2K\"
         zle accept-line
+        echo -ne \"\033[1A\"
+        echo -ne \"\033[0K\"
     }
 
     zle -N copycat_popup
