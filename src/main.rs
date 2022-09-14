@@ -22,14 +22,10 @@ fn main() {
 
         if contents != last_line && contents != "" {
             last_line = contents.clone();
-            last_line = last_line.trim().to_string();
-            println!("{}{}", "last_line: ", last_line);
-            println!("{}{}", "contents: ", contents);
+            last_line = last_line.trim().to_string(); // not needed, testing
             if let Err(e) = writeln!(file, "{}", contents) {
                 eprintln !("Couldn't write to file: {}", e);
             }
-
         }
-
     }
 }

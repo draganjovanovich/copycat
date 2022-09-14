@@ -32,18 +32,17 @@ echo "<?xml version="1.0" encoding="UTF-8"?>
 " > ~/Library/LaunchAgents/com.copycat.meraxes.plist
 chmod 640 ~/Library/LaunchAgents/com.copycat.meraxes.plist
 
-# if launchctl list does not contain com.copycat.meraxes
 if ! launchctl list | grep -q com.copycat.meraxes; then
   launchctl load ~/Library/LaunchAgents/com.copycat.meraxes.plist
 fi
 
 python_exec=$(which python)
 
-# check if ~/.zshrc contains the following "copycat_popup"
 if ! grep -q "copycat_popup" ~/.zshrc; then
     # write text to ~/.zshrc file
     echo "function copycat_popup() {
         BUFFER=\"${python_exec} /usr/local/bin/popup.py\"
+        echo -e \"\033[2K\"
         zle accept-line
     }
 
