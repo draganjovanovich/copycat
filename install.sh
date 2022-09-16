@@ -39,6 +39,7 @@ sudo bash -c 'cat <<EOIPFW >> ~/Library/LaunchAgents/com.copycat.meraxes.plist
 </plist>
 EOIPFW' 
 sudo chmod 640 ~/Library/LaunchAgents/com.copycat.meraxes.plist
+sudo chown $(whoami) ~/Library/LaunchAgents/com.copycat.meraxes.plist
 
 if ! launchctl list | grep -q com.copycat.meraxes; then
   launchctl load ~/Library/LaunchAgents/com.copycat.meraxes.plist
