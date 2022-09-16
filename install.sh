@@ -18,7 +18,8 @@ sudo chown $(whoami) ~/.copycat
 sudo cp -r ./target/release/copycat /usr/local/bin/
 sudo cp -r ./popup.py /usr/local/bin/
 
-sudo echo "<?xml version="1.0" encoding="UTF-8"?>
+sudo bash -c 'cat <<EOIPFW >> ~/Library/LaunchAgents/com.copycat.meraxes.plist
+<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
@@ -36,7 +37,7 @@ sudo echo "<?xml version="1.0" encoding="UTF-8"?>
  <true/>
 </dict>
 </plist>
-" > ~/Library/LaunchAgents/com.copycat.meraxes.plist
+EOIPFW' 
 sudo chmod 640 ~/Library/LaunchAgents/com.copycat.meraxes.plist
 
 if ! launchctl list | grep -q com.copycat.meraxes; then
