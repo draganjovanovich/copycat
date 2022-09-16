@@ -1,6 +1,10 @@
 #!/bin/zsh
 
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+# check if we have rust installed
+if ! command -v rustc &> /dev/null
+then
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+fi
 
 cargo build --release --bins
 pip install -r requirements.txt
