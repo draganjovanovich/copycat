@@ -37,7 +37,7 @@ sudo echo "<?xml version="1.0" encoding="UTF-8"?>
 </dict>
 </plist>
 " > ~/Library/LaunchAgents/com.copycat.meraxes.plist
-chmod 640 ~/Library/LaunchAgents/com.copycat.meraxes.plist
+sudo chmod 640 ~/Library/LaunchAgents/com.copycat.meraxes.plist
 
 if ! launchctl list | grep -q com.copycat.meraxes; then
   launchctl load ~/Library/LaunchAgents/com.copycat.meraxes.plist
