@@ -70,7 +70,7 @@ class ChoiceList:
                         continue
                     window.render_to_terminal(self.render(window.width))
         except KeyboardInterrupt:
-            self._idx = -1
+            os._exit(0)
 
         return self.get_selection()
 
@@ -132,7 +132,8 @@ if __name__ == "__main__":
     try:
         home = os.path.expanduser("~")
         with open(home + "/.copycat", "r") as f:
-            options = f.readlines()
+            options = f.read()
+            options = options.split("\u200b")
 
         options = options[-16:][::-1]
         options = [x.strip() for x in options if x.strip()]
