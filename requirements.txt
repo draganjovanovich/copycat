@@ -1,1 +1,2 @@
 pyperclip==1.8.2
+curtsies==0.4.0

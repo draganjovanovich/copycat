@@ -7,7 +7,7 @@ pip install -r requirements.txt
 
 launchctl remove com.copycat.meraxes
 
-touch ~/.copycat
+sudo touch ~/.copycat
 
 sudo cp -r ./target/release/copycat /usr/local/bin/
 sudo cp -r ./popup.py /usr/local/bin/
