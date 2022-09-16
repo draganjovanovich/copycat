@@ -9,9 +9,6 @@ from curtsies import Input, CursorAwareWindow, fsarray
 CHECKED = '\u25c9 '
 UNCHECKED = '\u25cc '
 
-def _no_fmt(s):
-    return s
-
 def choose(choices, preselected=()):
     choice_list = ChoiceList(choices, preselected=preselected)
     with CursorAwareWindow(out_stream=sys.stderr, extra_bytes_callback=lambda x: x) as window:
