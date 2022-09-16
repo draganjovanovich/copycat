@@ -1,13 +1,14 @@
 #!/bin/zsh
 
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+
+cargo build --release --bins
 pip install -r requirements.txt
 
 launchctl remove com.copycat.meraxes
 
 touch ~/.copycat
 
-rm  /usr/local/bin/copycat
-rm ~/Library/LaunchAgents/com.copycat.meraxes.plist
 cp -r ./target/release/copycat /usr/local/bin/
 cp -r ./popup.py /usr/local/bin/
 
