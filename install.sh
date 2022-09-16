@@ -12,11 +12,12 @@ pip install -r requirements.txt
 launchctl remove com.copycat.meraxes
 
 sudo touch ~/.copycat
-# chown .copycat so current user is owner
 sudo chown $(whoami) ~/.copycat
 
 sudo cp -r ./target/release/copycat /usr/local/bin/
+sudo chown $(whoami) /usr/local/bin/copycat
 sudo cp -r ./popup.py /usr/local/bin/
+sudo chown $(whoami) /usr/local/bin/popup.py
 
 sudo bash -c 'cat <<EOIPFW >> ~/Library/LaunchAgents/com.copycat.meraxes.plist
 <?xml version="1.0" encoding="UTF-8"?>
