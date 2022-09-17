@@ -1,6 +1,6 @@
 # COPYCAT  
 
-## Clipboard buffer for terminal use  
+## Clipboard buffer for terminal  
 
 ### Instalation  
 - Mac os  
