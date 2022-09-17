@@ -5,9 +5,9 @@
 ### Instalation  
 - Mac os  
 Run this command from terminal: `./install.sh`  
-- Linux
+- Linux  
     NIY
-- Windows
+- Windows  
     NIY
 
 ### Usage
