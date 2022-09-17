@@ -28,6 +28,16 @@ class Choice:
 
     def render(self, width, selected):
         lines = str(self).split('\n')
+        lines = [line.rstrip() for line in lines]
+
+        if len(lines) > 1:
+            REP_COLOR = selected == True and '\u001b[30m' or '\u001b[37m'
+            rep = '{} ({} more lines in buffer...)'.format(REP_COLOR, len(lines))
+            if len(lines[0]) > width - len(rep):
+                lines = [lines[0][:width - len(rep)] + rep]
+            else:
+                lines = [lines[0] + rep]
+
         if selected:
             arr = fsarray('\033[1m\u001b[47m\u001b[34m' + line for line in lines)
         else:
@@ -82,10 +92,6 @@ class ChoiceList:
         self._idx = index
 
     def render(self, width):
-        max_len = max(len(str(c)) for c in self)
-        if max_len > width:
-            width = max_len + 3
-
         arr = fsarray('', width=width)
         if self._prompt:
             arr.rows = self._prompt.rows + arr.rows

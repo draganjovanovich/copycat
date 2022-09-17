@@ -1,10 +1,16 @@
-# COPYCAT
+# COPYCAT  
 
-## Clipboard buffer for terminal use
+## Clipboard buffer for terminal use  
 
 ### Instalation  
-Run this command from terminal: `./install.sh`
+- Mac os  
+Run this command from terminal: `./install.sh`  
+- Linux
+    NIY
+- Windows
+    NIY
 
+### Usage
 Open select menu from terminal with `<CTRL> + T`  
-You can customize keybindings with editing ~/.zshrc file
+You can customize keybindings editing ~/.zshrc file
 
