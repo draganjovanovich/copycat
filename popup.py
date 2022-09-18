@@ -26,22 +26,42 @@ class Choice:
             self._disp = str(self._obj)
         return self._disp
 
-    def render(self, width, selected):
+    def render(self, width, selected, preview):
         lines = str(self).split('\n')
         lines = [line.rstrip() for line in lines]
+        REP_COLOR = selected == True and '\u001b[30m' or '\u001b[37m'
+        preview_height = int(os.get_terminal_size().lines / 2)
+        rest_lines = len(lines) - preview_height
 
         if len(lines) > 1:
-            REP_COLOR = selected == True and '\u001b[30m' or '\u001b[37m'
-            rep = '{} ({} more lines in buffer...)'.format(REP_COLOR, len(lines))
-            if len(lines[0]) > width - len(rep):
-                lines = [lines[0][:width - len(rep)] + rep]
+            if preview is True and selected is True:
+                lines = lines[:preview_height]
             else:
-                lines = [lines[0] + rep]
-
-        if selected:
-            arr = fsarray('\033[1m\u001b[47m\u001b[34m' + line for line in lines)
+                rep = '{} ({} more lines in buffer...)'.format(REP_COLOR, len(lines))
+                if len(lines[0]) > width - len(rep):
+                    lines = [lines[0][:width - len(rep)] + rep]
+                else:
+                    lines = [lines[0] + rep]
         else:
-            arr = fsarray(line for line in lines)
+            preview = False
+
+        max_len = max(len(line) for line in lines)
+        lines = [line + ' ' * (max_len - len(line)) for line in lines]
+
+        if selected and preview is not True:
+            arr = fsarray(['\033[1m\u001b[47m\u001b[34m' + line for line in lines])
+        else:
+            rep = ''
+            if selected and preview:
+                if rest_lines > 0 and preview is True:
+                    rep = '\u001b[47m{} ({} more lines in buffer...)'.format(REP_COLOR, (rest_lines))
+                    w = len(rep) - 10 # ansi escape codes takes space too.
+                    rep = rep + ' ' * (max_len - w)
+                    arr = fsarray(['\033[1m\u001b[47m\u001b[34m' + line for line in lines] + [rep])
+                else:
+                    arr = fsarray(['\033[1m\u001b[47m\u001b[34m' + line for line in lines])
+            else:
+                arr = fsarray(line for line in lines)
         return arr
 
 
@@ -62,23 +82,31 @@ class ChoiceList:
         self._des = deselected
         self._idx = 0
 
+        self._preview = False
+
     def run(self, window):
-        opt_arr = self.render(window.width)
+        opt_arr = self.render(window.width, self._preview)
         window.render_to_terminal(opt_arr)
         try:
             with Input() as keyGen:
                 for key in keyGen:
                     if key == '<UP>' or key == 'k':
+                        self._preview = False
                         self.prev()
                     elif key == '<DOWN>' or key == 'j':
+                        self._preview = False
                         self.next()
                     elif key == '<Ctrl-j>':
+                        self._preview = False
                         break
+                    elif key == 'p':
+                        self._preview = not self._preview
                     elif key == '<ESC>':
+                        self._preview = False
                         break
                     else:
                         continue
-                    window.render_to_terminal(self.render(window.width))
+                    window.render_to_terminal(self.render(window.width, self._preview))
         except KeyboardInterrupt:
             os._exit(0)
 
@@ -91,14 +119,14 @@ class ChoiceList:
     def select(self, index):
         self._idx = index
 
-    def render(self, width):
+    def render(self, width, preview):
         arr = fsarray('', width=width)
         if self._prompt:
             arr.rows = self._prompt.rows + arr.rows
         l = len(arr)
         for checked, option in self._choices:
             current = self._choices[self._idx][1] == option
-            opt_arr = option.render(width-3, current)
+            opt_arr = option.render(width-3, current, preview)
             arr[l:l+len(opt_arr), 2:width] = opt_arr
             state = '> ' if current else '  '
             arr[l:l+1, 0:2] = fsarray([(('\033[1m\u001b[44m\u001b[37m' + state))])
