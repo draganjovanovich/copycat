@@ -3,7 +3,6 @@
 import sys
 import os
 import pyperclip
-
 from curtsies import Input, CursorAwareWindow, fsarray
 
 CHECKED = '\u25c9 '
@@ -20,53 +19,91 @@ class Choice:
     def __init__(self, obj, display=None):
         self._obj = obj
         self._disp = display
+        self._preview = False
+        self._scroll = 0
 
     def __str__(self):
         if self._disp is None:
             self._disp = str(self._obj)
         return self._disp
 
-    def render(self, width, selected, preview):
+    def render(self, width, selected, preview, scroll, scroll_to_bottom, scroll_to_top):
+        if preview != self._preview:
+            self._preview = preview
+            self._scroll = 0
+
         lines = str(self).split('\n')
         lines = [line.rstrip() for line in lines]
+        max_len = max(len(line) for line in lines)
+        if max_len + 5 > os.get_terminal_size().columns:
+            max_len = os.get_terminal_size().columns - 5
         REP_COLOR = selected == True and '\u001b[30m' or '\u001b[37m'
         preview_height = int(os.get_terminal_size().lines / 2)
         rest_lines = len(lines) - preview_height
+        # replace TABS with spaces to avoid weird rendering
+        lines = [line.replace('\t', ' ') for line in lines]
 
-        # trim lines length to os.get_terminal_size().columns - 2
-        lines = [line[:width - 2] for line in lines]
+        # scroll if needed, handle scroll and add scrollbar arrow indicators
+        if rest_lines > 0:
+            if self._scroll + scroll > -1 and self._scroll + scroll < rest_lines:
+                self._scroll += scroll
+
+            if scroll_to_bottom:
+                self._scroll = rest_lines - 1
+            if scroll_to_top:
+                self._scroll = 0
+
+            if preview and selected:
+                scroll_percent = int((self._scroll / rest_lines) * (preview_height))
+                scroll_tip_pos = int((scroll_percent / preview_height) * (preview_height))
+                if scroll_tip_pos == 0:
+                    scroll_tip_pos = 1
+                if scroll_tip_pos + self._scroll > 0:
+                    lines[scroll_tip_pos + self._scroll] = lines[scroll_tip_pos + self._scroll] + ' ' * (max_len - len(lines[scroll_tip_pos + self._scroll]))
+                    lines[scroll_tip_pos + self._scroll] = lines[scroll_tip_pos + self._scroll][:max_len-1] + '\u2588'
+                if self._scroll > 0:
+                    lines[0 + self._scroll] = lines[0 + self._scroll] + ' ' * (max_len - len(lines[0 + self._scroll]))
+                    lines[0 + self._scroll] = lines[0 + self._scroll][:max_len - 1] + '\u25b2'
+                else:
+                    lines[0 + self._scroll] = lines[0 + self._scroll] + ' ' * (max_len - len(lines[0 + self._scroll]))
+                    lines[0 + self._scroll] = lines[0 + self._scroll][:max_len-1] + '\u25b3'
+
+                if self._scroll + 1 < rest_lines:
+                    lines[preview_height + self._scroll] = lines[preview_height + self._scroll] + ' ' * (max_len - len(lines[preview_height + self._scroll]))
+                    lines[preview_height + self._scroll] = lines[preview_height + self._scroll][:max_len-1] + '\u25bc'
+                else:
+                    lines[preview_height + self._scroll] = lines[preview_height + self._scroll] + ' ' * (max_len - len(lines[preview_height + self._scroll]))
+                    lines[preview_height + self._scroll] = lines[preview_height + self._scroll][:max_len-1] + '\u25bd'
 
         if len(lines) > 1:
             if preview is True and selected is True:
-                lines = lines[:preview_height]
+                if self._scroll > 0:
+                    lines = lines[self._scroll:]
+                elif self._scroll < 0:
+                    lines = lines[:self._scroll]
+                lines = lines[:preview_height + 1]
             else:
                 rep = '{} ({} more lines in buffer...)'.format(REP_COLOR, len(lines))
-                if len(lines[0]) > width - len(rep):
-                    lines = [lines[0][:width - len(rep)] + rep]
+                if len(lines[0]) > max_len - len(rep):
+                    lines = [lines[0][:max_len - len(rep)] + rep]
                 else:
                     lines = [lines[0] + rep]
         else:
             preview = False
 
-        max_len = max(len(line) for line in lines)
         lines = [line + ' ' * (max_len - len(line)) for line in lines]
+        # trim lines length to os.get_terminal_size().columns - 2
+        lines = [line[:width] for line in lines]
 
         if selected and preview is not True:
             arr = fsarray(['\033[1m\u001b[47m\u001b[34m' + line for line in lines])
         else:
             rep = ''
             if selected and preview:
-                if rest_lines > 0 and preview is True:
-                    rep = '\u001b[47m{} ({} more lines in buffer...)'.format(REP_COLOR, (rest_lines))
-                    w = len(rep) - 10 # ansi escape codes takes space too.
-                    rep = rep + ' ' * (max_len - w)
-                    arr = fsarray(['\033[1m\u001b[47m\u001b[34m' + line for line in lines] + [rep])
-                else:
-                    arr = fsarray(['\033[1m\u001b[47m\u001b[34m' + line for line in lines])
+               arr = fsarray(['\033[1m\u001b[47m\u001b[34m' + line for line in lines])
             else:
                 arr = fsarray(line for line in lines)
         return arr
-
 
 class ChoiceList:
     def __init__(self, choices, prompt=None, preselected=(), selected=CHECKED, deselected=UNCHECKED):
@@ -86,30 +123,52 @@ class ChoiceList:
         self._idx = 0
 
         self._preview = False
-
+        self._scroll = 0
+        self._scroll_to_bottom = False
+        self._scroll_to_top = False
+        self._gg = 0
     def run(self, window):
-        opt_arr = self.render(window.width, self._preview)
+        opt_arr = self.render(window.width, self._preview, self._scroll, self._scroll_to_bottom, self._scroll_to_top)
         window.render_to_terminal(opt_arr)
         try:
             with Input() as keyGen:
                 for key in keyGen:
                     if key == '<UP>' or key == 'k':
-                        self._preview = False
-                        self.prev()
+                        self._scroll = -1
+                        if self._preview is False:
+                            self.prev()
                     elif key == '<DOWN>' or key == 'j':
-                        self._preview = False
-                        self.next()
+                        self._scroll = 1
+                        if self._preview is False:
+                            self.next()
                     elif key == '<Ctrl-j>':
                         self._preview = False
                         break
-                    elif key == 'p':
+                    elif key == 'p' and len(self.get_selection().split('\n')) > 1:
                         self._preview = not self._preview
+                        self._scroll_to_bottom = False
+                        self._scroll_to_top = False
                     elif key == '<ESC>':
+                        if not self._preview:
+                            break
                         self._preview = False
-                        break
+                    elif key == 'q' or key == 'Q':
+                        if not self._preview:
+                            break
+                        self._preview = False
+                    elif key == 'G':
+                        self._scroll_to_bottom = True
+                    elif key == 'g':
+                        self._gg += 1
+                        if self._gg == 2:
+                            self._scroll_to_top = True
+                            self._gg = 0
                     else:
                         continue
-                    window.render_to_terminal(self.render(window.width, self._preview))
+                    window.render_to_terminal(self.render(window.width, self._preview, self._scroll, self._scroll_to_bottom, self._scroll_to_top))
+                    self._scroll = 0
+                    self._scroll_to_bottom = False
+                    self._scroll_to_top = False
         except KeyboardInterrupt:
             os._exit(0)
 
@@ -122,14 +181,14 @@ class ChoiceList:
     def select(self, index):
         self._idx = index
 
-    def render(self, width, preview):
+    def render(self, width, preview, scroll, scroll_to_bottom, scroll_to_top):
         arr = fsarray('', width=width)
         if self._prompt:
             arr.rows = self._prompt.rows + arr.rows
         l = len(arr)
         for checked, option in self._choices:
             current = self._choices[self._idx][1] == option
-            opt_arr = option.render(width-3, current, preview)
+            opt_arr = option.render(width-3, current, preview, scroll, scroll_to_bottom, scroll_to_top)
             arr[l:l+len(opt_arr), 2:width] = opt_arr
             state = '> ' if current else '  '
             arr[l:l+1, 0:2] = fsarray([(('\033[1m\u001b[44m\u001b[37m' + state))])
