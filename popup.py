@@ -64,13 +64,21 @@ class Choice:
                 self._scroll = 0
 
             if preview and selected:
+                scroll_tip_height = int((preview_height / rest_lines) * preview_height)
+                if scroll_tip_height == 0:
+                    scroll_tip_height = 1
                 scroll_percent = int((self._scroll / rest_lines) * (preview_height))
-                scroll_tip_pos = int((scroll_percent / preview_height) * (preview_height))
+                scroll_tip_pos = int((scroll_percent / preview_height) * (preview_height - scroll_tip_height)) + 1
+
                 if scroll_tip_pos == 0:
                     scroll_tip_pos = 1
+
                 if scroll_tip_pos + self._scroll > 0:
-                    lines[scroll_tip_pos + self._scroll] = lines[scroll_tip_pos + self._scroll] + ' ' * (max_len - len(lines[scroll_tip_pos + self._scroll]))
-                    lines[scroll_tip_pos + self._scroll] = lines[scroll_tip_pos + self._scroll][:max_len-1] + '\u2588'
+                    for i in range(scroll_tip_height):
+                        # fill spaces and make last char cyan color
+                        lines[scroll_tip_pos + self._scroll + i ] = lines[scroll_tip_pos + self._scroll + i] + ' ' * (max_len - len(lines[scroll_tip_pos + self._scroll + i]))
+                        lines[scroll_tip_pos + self._scroll + i ] = lines[scroll_tip_pos + self._scroll + i][:max_len-1] + U'\u2589'
+
                 if self._scroll > 0:
                     lines[0 + self._scroll] = lines[0 + self._scroll] + ' ' * (max_len - len(lines[0 + self._scroll]))
                     lines[0 + self._scroll] = lines[0 + self._scroll][:max_len - 1] + '\u25b2'
