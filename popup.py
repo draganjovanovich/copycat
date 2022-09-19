@@ -44,7 +44,7 @@ class Choice:
         # replace TABS with spaces to avoid weird rendering
         lines = [line.replace('\t', ' ') for line in lines]
 
-        if selected:
+        if selected and not preview:
             lines = [f'\u001b[0m\033[1m\u001b[47m\u001b[34m{line}' for line in enumerate(lines)]
 
         # scroll if needed, handle scroll and add scrollbar arrow indicators
