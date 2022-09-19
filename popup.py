@@ -35,13 +35,17 @@ class Choice:
         lines = str(self).split('\n')
         lines = [line.rstrip() for line in lines]
         max_len = max(len(line) for line in lines)
-        if max_len + 5 > os.get_terminal_size().columns:
+        if max_len + 10 > os.get_terminal_size().columns:
             max_len = os.get_terminal_size().columns - 5
+
         REP_COLOR = selected == True and '\u001b[30m' or '\u001b[37m'
         preview_height = int(os.get_terminal_size().lines / 2)
         rest_lines = len(lines) - preview_height
         # replace TABS with spaces to avoid weird rendering
         lines = [line.replace('\t', ' ') for line in lines]
+
+        if selected:
+            lines = [f'\u001b[0m\033[1m\u001b[47m\u001b[34m{line}' for line in enumerate(lines)]
 
         # scroll if needed, handle scroll and add scrollbar arrow indicators
         if rest_lines > 0:
@@ -54,6 +58,9 @@ class Choice:
                 self._scroll = 0
 
             if preview and selected:
+                # render line numbers for each line, but without bolding and with balck font
+                lines = [f'\u001b[44m\u001b[36m{i+1:3}\u001b[0m\033[1m\u001b[47m\u001b[34m{line}' for i, line in enumerate(lines)]
+
                 scroll_percent = int((self._scroll / rest_lines) * (preview_height))
                 scroll_tip_pos = int((scroll_percent / preview_height) * (preview_height))
                 if scroll_tip_pos == 0:
@@ -93,16 +100,8 @@ class Choice:
 
         lines = [line + ' ' * (max_len - len(line)) for line in lines]
         # trim lines length to os.get_terminal_size().columns - 2
-        lines = [line[:width] for line in lines]
-
-        if selected and preview is not True:
-            arr = fsarray(['\033[1m\u001b[47m\u001b[34m' + line for line in lines])
-        else:
-            rep = ''
-            if selected and preview:
-               arr = fsarray(['\033[1m\u001b[47m\u001b[34m' + line for line in lines])
-            else:
-                arr = fsarray(line for line in lines)
+        lines = [line[:width-2] for line in lines]
+        arr = fsarray([line for line in lines])
         return arr
 
 class ChoiceList:
