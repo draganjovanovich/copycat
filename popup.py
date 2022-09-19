@@ -33,6 +33,9 @@ class Choice:
         preview_height = int(os.get_terminal_size().lines / 2)
         rest_lines = len(lines) - preview_height
 
+        # trim lines length to os.get_terminal_size().columns - 2
+        lines = [line[:width - 2] for line in lines]
+
         if len(lines) > 1:
             if preview is True and selected is True:
                 lines = lines[:preview_height]
