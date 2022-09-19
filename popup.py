@@ -27,7 +27,7 @@ class Choice:
             self._disp = str(self._obj)
         return self._disp
 
-    def render(self, width, selected, preview, scroll, scroll_to_bottom, scroll_to_top):
+    def render(self, width, selected, preview, scroll, scroll_to_bottom, scroll_to_top, index):
         if preview != self._preview:
             self._preview = preview
             self._scroll = 0
@@ -43,9 +43,11 @@ class Choice:
         rest_lines = len(lines) - preview_height
         # replace TABS with spaces to avoid weird rendering
         lines = [line.replace('\t', ' ') for line in lines]
+        # prepend one space for each line
+        lines = [' ' + line for line in lines]
 
         if selected and not preview:
-            lines = [f'\u001b[0m\033[1m\u001b[47m\u001b[34m{line}' for line in enumerate(lines)]
+            lines = [f'\u001b[0m\033[1m\u001b[47m\u001b[34m{line}' for line in lines]
 
         # scroll if needed, handle scroll and add scrollbar arrow indicators
         if rest_lines > 0:
@@ -98,10 +100,16 @@ class Choice:
         else:
             preview = False
 
+        # fill up with spaces
         lines = [line + ' ' * (max_len - len(line)) for line in lines]
         # trim lines length to os.get_terminal_size().columns - 2
         lines = [line[:width-2] for line in lines]
-        arr = fsarray([line for line in lines])
+        # add index with 3 spaces padding
+        if not preview:
+            arr = fsarray([('\u001b[44m\u001b[01m{:2} \u001b[0m').format(index) + line for line in lines])
+        else:
+            arr = fsarray([line for line in lines])
+
         return arr
 
 class ChoiceList:
@@ -127,7 +135,7 @@ class ChoiceList:
         self._scroll_to_top = False
         self._gg = 0
     def run(self, window):
-        opt_arr = self.render(window.width, self._preview, self._scroll, self._scroll_to_bottom, self._scroll_to_top)
+        opt_arr = self.render(window.width, self._preview, self._scroll, self._scroll_to_bottom, self._scroll_to_top, self._idx)
         window.render_to_terminal(opt_arr)
         try:
             with Input() as keyGen:
@@ -164,7 +172,7 @@ class ChoiceList:
                             self._gg = 0
                     else:
                         continue
-                    window.render_to_terminal(self.render(window.width, self._preview, self._scroll, self._scroll_to_bottom, self._scroll_to_top))
+                    window.render_to_terminal(self.render(window.width, self._preview, self._scroll, self._scroll_to_bottom, self._scroll_to_top, self._idx))
                     self._scroll = 0
                     self._scroll_to_bottom = False
                     self._scroll_to_top = False
@@ -180,18 +188,20 @@ class ChoiceList:
     def select(self, index):
         self._idx = index
 
-    def render(self, width, preview, scroll, scroll_to_bottom, scroll_to_top):
+    def render(self, width, preview, scroll, scroll_to_bottom, scroll_to_top, index):
         arr = fsarray('', width=width)
         if self._prompt:
             arr.rows = self._prompt.rows + arr.rows
         l = len(arr)
+        i = 1
         for checked, option in self._choices:
             current = self._choices[self._idx][1] == option
-            opt_arr = option.render(width-3, current, preview, scroll, scroll_to_bottom, scroll_to_top)
+            opt_arr = option.render(width-3, current, preview, scroll, scroll_to_bottom, scroll_to_top, i)
             arr[l:l+len(opt_arr), 2:width] = opt_arr
             state = '> ' if current else '  '
             arr[l:l+1, 0:2] = fsarray([(('\033[1m\u001b[44m\u001b[37m' + state))])
             l += len(opt_arr)
+            i += 1
         return arr
 
     def get_selection(self):
