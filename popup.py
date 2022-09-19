@@ -48,17 +48,21 @@ class Choice:
         lines = [line.replace('\t', ' ') for line in lines]
         # prepend one space for each line
         lines = [' ' + line for line in lines]
-        max_len = width
-        if max_len + 10 > os.get_terminal_size().columns:
-            max_len = os.get_terminal_size().columns - 5
+        # ansi escape codes take up place...
+        max_len = width - 2
+        # if max_len + 10 > os.get_terminal_size().columns:
+        # max_len = os.get_terminal_size().columns - 5
 
         REP_COLOR = selected and '\u001b[30m' or '\u001b[37m'
         preview_height = int(os.get_terminal_size().lines / 2)
         rest_lines = len(lines) - preview_height
 
-        if selected and not preview:
+        if selected:
             lines = [
                 f'\u001b[0m\033[1m\u001b[47m\u001b[34m{line}' for line in lines]
+        elif not selected:
+            lines = [
+                f'\u001b[0m\033[1m\u001b[0m\u001b[0m{line}' for line in lines]
 
         if selected and preview:
             # render line numbers for each line, but without bolding and with
