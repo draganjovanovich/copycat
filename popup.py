@@ -34,20 +34,24 @@ class Choice:
 
         lines = str(self).split('\n')
         lines = [line.rstrip() for line in lines]
-        max_len = max(len(line) for line in lines)
+        # replace TABS with spaces to avoid weird rendering
+        lines = [line.replace('\t', ' ') for line in lines]
+        # prepend one space for each line
+        lines = [' ' + line for line in lines]
+        max_len = width
         if max_len + 10 > os.get_terminal_size().columns:
             max_len = os.get_terminal_size().columns - 5
 
         REP_COLOR = selected == True and '\u001b[30m' or '\u001b[37m'
         preview_height = int(os.get_terminal_size().lines / 2)
         rest_lines = len(lines) - preview_height
-        # replace TABS with spaces to avoid weird rendering
-        lines = [line.replace('\t', ' ') for line in lines]
-        # prepend one space for each line
-        lines = [' ' + line for line in lines]
 
         if selected and not preview:
             lines = [f'\u001b[0m\033[1m\u001b[47m\u001b[34m{line}' for line in lines]
+
+        if selected and preview:
+            # render line numbers for each line, but without bolding and with balck font
+            lines = [f'\u001b[44m\u001b[36m{i+1:3}\u001b[0m\033[1m\u001b[47m\u001b[34m{line}' for i, line in enumerate(lines)]
 
         # scroll if needed, handle scroll and add scrollbar arrow indicators
         if rest_lines > 0:
@@ -60,9 +64,6 @@ class Choice:
                 self._scroll = 0
 
             if preview and selected:
-                # render line numbers for each line, but without bolding and with balck font
-                lines = [f'\u001b[44m\u001b[36m{i+1:3}\u001b[0m\033[1m\u001b[47m\u001b[34m{line}' for i, line in enumerate(lines)]
-
                 scroll_percent = int((self._scroll / rest_lines) * (preview_height))
                 scroll_tip_pos = int((scroll_percent / preview_height) * (preview_height))
                 if scroll_tip_pos == 0:
@@ -105,10 +106,7 @@ class Choice:
         # trim lines length to os.get_terminal_size().columns - 2
         lines = [line[:width-2] for line in lines]
         # add index with 3 spaces padding
-        if not preview:
-            arr = fsarray([('\u001b[44m\u001b[01m{:2} \u001b[0m').format(index) + line for line in lines])
-        else:
-            arr = fsarray([line for line in lines])
+        arr = fsarray([('\u001b[44m\u001b[01m{:2} \u001b[0m').format(i == 0 and index or '') + line for i, line in enumerate(lines)])
 
         return arr
 
