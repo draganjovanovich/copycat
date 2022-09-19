@@ -133,7 +133,7 @@ class ChoiceList:
         self._scroll_to_top = False
         self._gg = 0
     def run(self, window):
-        opt_arr = self.render(window.width, self._preview, self._scroll, self._scroll_to_bottom, self._scroll_to_top, self._idx)
+        opt_arr = self.render(window.width, self._preview, self._scroll, self._scroll_to_bottom, self._scroll_to_top)
         window.render_to_terminal(opt_arr)
         try:
             with Input() as keyGen:
@@ -170,7 +170,7 @@ class ChoiceList:
                             self._gg = 0
                     else:
                         continue
-                    window.render_to_terminal(self.render(window.width, self._preview, self._scroll, self._scroll_to_bottom, self._scroll_to_top, self._idx))
+                    window.render_to_terminal(self.render(window.width, self._preview, self._scroll, self._scroll_to_bottom, self._scroll_to_top))
                     self._scroll = 0
                     self._scroll_to_bottom = False
                     self._scroll_to_top = False
@@ -186,7 +186,7 @@ class ChoiceList:
     def select(self, index):
         self._idx = index
 
-    def render(self, width, preview, scroll, scroll_to_bottom, scroll_to_top, index):
+    def render(self, width, preview, scroll, scroll_to_bottom, scroll_to_top):
         arr = fsarray('', width=width)
         if self._prompt:
             arr.rows = self._prompt.rows + arr.rows
