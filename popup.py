@@ -96,11 +96,12 @@ class Choice:
 
                 if scroll_tip_pos + self._scroll > 0:
                     for i in range(scroll_tip_height):
-                        # fill spaces and make last char cyan color
-                        lines[scroll_tip_pos + self._scroll + i] = lines[scroll_tip_pos + self._scroll +
-                                                                         i] + ' ' * (max_len - len(lines[scroll_tip_pos + self._scroll + i]))
-                        lines[scroll_tip_pos + self._scroll + i] = lines[scroll_tip_pos +
-                                                                         self._scroll + i][:max_len - 1] + U'\u2589'
+                        index = scroll_tip_pos + self._scroll + i
+                        if index > (len(lines) - 1) or index < 0:
+                            index = 0
+
+                        lines[index] = lines[index] + ' ' * (max_len - len(lines[index]))
+                        lines[index] = lines[index][:max_len - 1] + U'\u2589'
 
                 if self._scroll > 0:
                     lines[0 + self._scroll] = lines[0 + self._scroll] + \
