@@ -96,12 +96,12 @@ class Choice:
 
                 if scroll_tip_pos + self._scroll > 0:
                     for i in range(scroll_tip_height):
-                        index = scroll_tip_pos + self._scroll + i
-                        if index > (len(lines) - 1) or index < 0:
-                            index = 0
+                        idx = scroll_tip_pos + self._scroll + i
+                        if idx > (len(lines) - 1) or idx < 0:
+                            idx = 0
 
-                        lines[index] = lines[index] + ' ' * (max_len - len(lines[index]))
-                        lines[index] = lines[index][:max_len - 1] + U'\u2589'
+                        lines[idx] = lines[idx] + ' ' * (max_len - len(lines[idx]))
+                        lines[idx] = lines[idx][:max_len - 1] + U'\u2589'
 
                 if self._scroll > 0:
                     lines[0 + self._scroll] = lines[0 + self._scroll] + \
