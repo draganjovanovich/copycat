@@ -19,6 +19,6 @@ Confirm and copy selection to cliboard with `Enter key`
 **NOTE:** `You can customize keybinding for triggering copycat in terminal by editing ~/.zshrc file`  
 
 ### GUI usage
-Open select menu with `F1 key` not remapable for now 
-Toggle preview of large CB items with key `Mouse right click`
-Confirm and copy selection to cliboard with `Enter key` or `Mouse double left click`  
+Open select menu with `F1 key` it's not remapable for now  
+Toggle preview of large CB items with key `Mouse right click`  
+Confirm and copy selection to cliboard with `Enter key` or `Mouse double left click`   
