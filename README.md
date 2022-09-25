@@ -1,6 +1,6 @@
 # COPYCAT  
 
-## Clipboard buffer for terminal and gui environments
+## Clipboard buffer for terminal emulator and gui environment usage
 
 ### Rrequirements  
 - MACOS  
