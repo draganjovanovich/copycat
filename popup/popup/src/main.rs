@@ -83,7 +83,7 @@ fn main() {
         .map(|line| line.to_string())
         .collect();
 
-    let lines: Vec<String> = lines.into_iter().unique().rev().map(|line| line.trim().to_string()).collect();
+    let lines: Vec<String> = lines.into_iter().filter(|line| line != "").unique().rev().map(|line| line.trim().to_string()).collect();
 
     for (i,line ) in lines.iter().enumerate() {
         if i == 0 {
