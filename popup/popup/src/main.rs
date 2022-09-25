@@ -67,7 +67,6 @@ fn main() {
 
             }
         }
-        // close app on escape
         if  ev == enums::Event::KeyDown && app::event_key() == Key::Escape {
             app::quit();
             std::process::exit(0);
