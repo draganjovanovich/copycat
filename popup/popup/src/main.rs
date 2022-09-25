@@ -35,6 +35,7 @@ fn main() {
                 let l = app::focus();
                 if l.is_none() {
                     app::quit();
+                    std::process::exit(0);
                 }
             });
 
