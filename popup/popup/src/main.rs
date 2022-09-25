@@ -55,8 +55,8 @@ fn main() {
     b.set_label_color(FG);
     b.set_selection_color(BG_SEL);
 
-    // On enter, copy the selected item to the clipboard
     b.handle(move |b, ev| {
+        // On enter, copy the selected item to the clipboard
         if ev == enums::Event::KeyDown && app::event_key() == Key::Enter {
             unsafe {
                 let mut ctx: ClipboardContext = ClipboardProvider::new().unwrap();
@@ -67,9 +67,20 @@ fn main() {
 
             }
         }
+        // close app on escape
         if  ev == enums::Event::KeyDown && app::event_key() == Key::Escape {
             app::quit();
             std::process::exit(0);
+        }
+        if  ev == enums::Event::KeyDown && app::event_key() ==  Key::from_char('j') {
+            let idx: i32 = b.value();
+            b.select(idx + 1);
+            format_rows(b);
+        }
+        if  ev == enums::Event::KeyDown && app::event_key() ==  Key::from_char('k') {
+            let idx: i32 = b.value();
+            b.select(idx - 1);
+            format_rows(b);
         }
         true
     });
@@ -102,17 +113,8 @@ fn main() {
         // add the item to the browser, text is just short representation and data is the actual CB data
         b.add_with_data(&row, data);
         b.set_callback(move |b| {
-            for i in 1..b.size()+1 {
-                let row = b.text(i).unwrap().replace("@C879871488","@C3148545792");
-                b.set_text(i, &row);
-
-                let idx = b.value();
-                if idx > 0 {
-                    let row = b.text(idx).unwrap().replace("@C3148545792", "@C879871488");
-                    b.set_text(idx, &row);
-
-                }
-            }
+            // format rows, on selection
+            format_rows(b);
             if app::event_mouse_button() == app::MouseButton::Right {
                 unsafe {
                     let idx: i32 = b.value();
@@ -145,6 +147,9 @@ fn main() {
             }
         });
     }
+    b.select(1);
+    let row = b.text(1).unwrap().replace("@C3148545792", "@C879871488");
+    b.set_text(1, &row);
     wind.make_resizable(true);
     wind.show();
 
@@ -170,5 +175,19 @@ impl MyPopup {
         window.end();
         window.show();
         Self { window }
+    }
+}
+
+fn format_rows(b: &mut browser::HoldBrowser) {
+    for i in 1..b.size()+1 {
+        let row = b.text(i).unwrap().replace("@C879871488","@C3148545792");
+        b.set_text(i, &row);
+
+        let idx = b.value();
+        if idx > 0 {
+            let row = b.text(idx).unwrap().replace("@C3148545792", "@C879871488");
+            b.set_text(idx, &row);
+
+        }
     }
 }
