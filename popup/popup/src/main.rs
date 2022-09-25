@@ -30,7 +30,7 @@ fn main() {
     wind.set_color(BG);
 
     wind.handle(move |_w, ev| {
-        if ev == enums::Event::Unfocus{
+        if ev == enums::Event::Unfocus {
             app::add_timeout3(1.00, |_| {
                 let l = app::focus();
                 if l.is_none() {
@@ -38,7 +38,6 @@ fn main() {
                     std::process::exit(0);
                 }
             });
-
         }
         true
     });
@@ -67,6 +66,10 @@ fn main() {
                 app.quit();
 
             }
+        }
+        if  ev == enums::Event::KeyDown && app::event_key() == Key::Escape {
+            app::quit();
+            std::process::exit(0);
         }
         true
     });
