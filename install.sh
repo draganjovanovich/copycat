@@ -7,6 +7,9 @@ then
 fi
 
 cargo build --release --bins
+cd popup/popup
+cargo build --release --bins
+cd ../../
 pip install -r requirements.txt
 
 launchctl remove com.copycat.meraxes
@@ -16,7 +19,9 @@ sudo chown $(whoami) ~/.copycat
 
 sudo cp -r ./target/release/copycat /usr/local/bin/
 sudo chown $(whoami) /usr/local/bin/copycat
-sudo cp -r ./popup.py /usr/local/bin/
+sudo cp -r ./popup/popup/target/release/popup /usr/local/bin/
+sudo chown $(whoami) /usr/local/bin/popup
+sudo cp -r ./popup/popup.py /usr/local/bin/
 sudo chown $(whoami) /usr/local/bin/popup.py
 
 sudo bash -c 'cat <<EOIPFW >> ~/Library/LaunchAgents/com.copycat.meraxes.plist
