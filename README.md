@@ -1,6 +1,6 @@
 # COPYCAT  
 
-## Clipboard buffer for terminal and gui environments
+## Clipboard buffer for terminal emulator and gui environment usage
 
 ### Rrequirements  
 - MACOS  
@@ -11,12 +11,12 @@
 
 Run this command from terminal: `./install.sh`  
 ### Usage modes
-There are 3 modes of usage, terminal emulator, GUI and VIM:  
-- Terminal emulator:  
-You can use this mode when you are inside of terminal and you want to access CB history directly inside of the terminal  
-- GUI:  
-You can use this mode from wherever you are in the of the macos, for example you are in chrome  
-- VIM:  
+There are 3 possible modes of usage:
+- **Terminal emulator**:  
+You can use this mode when you are inside of the terminal and you want to access CB history directly inside of terminal window, without leaving terminal.
+- **GUI**:  
+You can use this mode from wherever you are in the of the macos, for example you are in Chrome...  
+- **VIM**:  
 You can use this mode from inside of VIM, with some help of additional vim plugin mentioned in the description below  
 
 
