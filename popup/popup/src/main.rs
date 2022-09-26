@@ -81,6 +81,34 @@ fn main() {
             b.select(idx - 1);
             format_rows(b);
         }
+        if  ev == enums::Event::KeyDown && app::event_key() ==  Key::from_char('p') {
+            let idx: i32 = b.value();
+            let x_coord = b.x() + b.width() / 2 + 150;
+            let y_coord = b.y() + b.height() / 2 + 200;
+
+            unsafe {
+                let d = b.data::<String>(idx);
+                if let Some(d) = d {
+                    if d.contains("\n") {
+                        let popup = MyPopup::new(&d.to_string(), x_coord, y_coord);
+                        let mut w = popup.window;
+                        // get main window
+                        let mut main_win = b.parent().unwrap();
+                        w.handle(move |w, ev| {
+                            if ev == enums::Event::Unfocus || (
+                                ev == enums::Event::KeyDown &&
+                                app::event_key() == Key::from_char('p')) {
+                                w.hide();
+                                main_win.take_focus().unwrap();
+                                true
+                            } else {
+                                false
+                            }
+                        });
+                    }
+                }
+            }
+        }
         true
     });
 
