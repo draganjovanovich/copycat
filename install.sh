@@ -6,6 +6,20 @@ then
     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 fi
 
+# check if user have python3
+if ! command -v python3 &> /dev/null
+then
+    echo "python3 is required, please install it: brew install python"
+    exit
+fi
+
+# check if user have pip installed
+if ! command -v pip &> /dev/null
+then
+    echo "pip is required, please install it: brew install pip"
+    exit
+fi
+
 cargo build --release --bins
 cd popup/popup
 cargo build --release --bins
@@ -51,7 +65,7 @@ if ! launchctl list | grep -q com.copycat.meraxes; then
   launchctl load ~/Library/LaunchAgents/com.copycat.meraxes.plist
 fi
 
-python_exec=$(which python)
+python_exec=$(which python3)
 
 if ! grep -q "copycat_popup" ~/.zshrc; then
     # write text to ~/.zshrc file

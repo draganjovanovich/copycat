@@ -5,6 +5,8 @@
 ### Rrequirements  
 - MACOS  
 - ZSH  
+- Python3  
+
 **NOTE:** `It's possible to use bash instead of zsh, but with manual tweaking of .bashrc file.`  
 
 ### Instalation  
