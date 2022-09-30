@@ -8,14 +8,12 @@ from curtsies import Input, CursorAwareWindow, fsarray
 CHECKED = '\u25c9 '
 UNCHECKED = '\u25cc '
 
-
 def choose(choices, preselected=()):
     choice_list = ChoiceList(choices, preselected=preselected)
-    with CursorAwareWindow(out_stream=sys.stderr, extra_bytes_callback=lambda x: x) as window:
+    with CursorAwareWindow(out_stream=sys.stderr,
+                           extra_bytes_callback=lambda x: x) as window:
         options = choice_list.run(window)
-
     return options
-
 
 class Choice:
     def __init__(self, obj, display=None):

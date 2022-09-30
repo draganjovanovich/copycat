@@ -22,11 +22,9 @@ fn main() {
 
     // spawn new thread
     let hook = Hook::new().unwrap();
-    hook.register(KeyCode::F1, ||
-        {
+    hook.register(KeyCode::F1, || {
             std::process::Command::new("/usr/local/bin/popup").spawn().unwrap();
-        }
-    ).expect("Failed to register hotkey");
+        }).expect("Failed to register hotkey");
 
     loop {
         let mut ctx : ClipboardContext = ClipboardProvider::new().unwrap();

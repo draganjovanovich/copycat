@@ -9,7 +9,6 @@ use fltk::{
     window::Window,
 };
 use std::fs;
-use fltk::text::TextDisplay;
 use itertools::Itertools;
 use fltk::enums::{ Color, Key };
 
@@ -21,6 +20,7 @@ const WIN_W: i32 = 800;
 const WIN_H: i32 = 400;
 
 fn main() {
+    let mut gg = 0;
     let app = app::App::default().with_scheme(app::Scheme::Gtk);
     app::background2(48, 48, 63);
     app::foreground(187, 170, 255);
@@ -70,16 +70,6 @@ fn main() {
         if  ev == enums::Event::KeyDown && app::event_key() == Key::Escape {
             app::quit();
             std::process::exit(0);
-        }
-        if  ev == enums::Event::KeyDown && app::event_key() ==  Key::from_char('j') {
-            let idx: i32 = b.value();
-            b.select(idx + 1);
-            format_rows(b);
-        }
-        if  ev == enums::Event::KeyDown && app::event_key() ==  Key::from_char('k') {
-            let idx: i32 = b.value();
-            b.select(idx - 1);
-            format_rows(b);
         }
         if  ev == enums::Event::KeyDown && app::event_key() ==  Key::from_char('p') {
             let idx: i32 = b.value();
@@ -180,7 +170,63 @@ fn main() {
     wind.make_resizable(true);
     wind.show();
 
-    app.run().unwrap();
+    // app loop, handle vim like motions for scrolling
+    while app.wait() {
+        // get curently focused window
+        let ev = app::event();
+        if gg == 2 {
+            gg = 0;
+            b.select(1);
+            format_rows(& mut b);
+        }
+        if  ev == enums::Event::KeyDown && app::event_text() ==  "g" {
+            gg += 1;
+        }
+        if  ev == enums::Event::KeyDown && app::event_text() ==  "G" {
+            b.select(b.size());
+            format_rows(& mut b);
+        }
+        if  ev == enums::Event::KeyDown && app::event_key() ==  Key::from_char('j') {
+            let l = app::focus();
+            if l.is_some() {
+                let w = l.unwrap();
+                if w.parent().unwrap() == b.parent().unwrap() {
+                    b.select(b.value() + 1);
+                    format_rows(& mut b);
+                } else {
+                    // find browser in window
+                    let widget = w.parent().unwrap().child(0).unwrap();
+                    let cb_item_preview_option = widget.window().unwrap().child(0).unwrap();
+                    // cast b to browser
+                    let mut cb_item_preview_browser = unsafe { std::mem::transmute::<widget::Widget, browser::HoldBrowser>(cb_item_preview_option) };
+                    let idx: i32 = cb_item_preview_browser.value();
+                    cb_item_preview_browser.select(idx + 1);
+                    format_rows(& mut cb_item_preview_browser);
+                }
+
+            }
+        }
+        if  ev == enums::Event::KeyDown && app::event_key() ==  Key::from_char('k') {
+            let l = app::focus();
+            if l.is_some() {
+                let w = l.unwrap();
+                if w.parent().unwrap() == b.parent().unwrap() {
+                    b.select(b.value() - 1);
+                    format_rows(& mut b);
+                } else {
+                    // find browser in window
+                    let widget = w.parent().unwrap().child(0).unwrap();
+                    let cb_item_preview_option = widget.window().unwrap().child(0).unwrap();
+                    // cast b to browser
+                    let mut cb_item_preview_browser = unsafe { std::mem::transmute::<widget::Widget, browser::HoldBrowser>(cb_item_preview_option) };
+                    let idx: i32 = cb_item_preview_browser.value();
+                    cb_item_preview_browser.select(idx - 1);
+                    format_rows(& mut cb_item_preview_browser);
+                }
+
+            }
+        }
+    }
 }
 
 pub struct MyPopup {
@@ -194,17 +240,96 @@ impl MyPopup {
         window.make_modal(false);
         window.set_border(false);
         window.set_color(BG);
+        let mut b = browser::HoldBrowser::default()
+            .with_size(WIN_W - 100, WIN_H - 100)
+            .center_of(&window);
+        b.set_text_size(20);
+        b.set_label("BLA");
 
-        let mut text = TextDisplay::default().with_size(WIN_W - 100, WIN_H - 100);
-        let mut buffer = text::TextBuffer::default();
-        buffer.set_text(txt);
-        text.set_buffer(Some(buffer));
+        let widths = &[50, WIN_W - 340, 50];
+        b.set_column_widths(widths);
+
+        b.set_column_char('\t');
+        b.set_color(BG);
+        b.set_label_color(FG);
+        b.set_selection_color(BG_SEL);
+        // convert text to lines
+        let lines: Vec<String> = txt.split("\n").map(|line| line.to_string()).collect();
+
+        for (i,line ) in lines.iter().enumerate() {
+            if i == 0 {
+                continue;
+            }
+            // ugly stuff..., changing colors based on selection
+            let row = format!("@C3148545792 {}\t@C3148545792 ", i) + line.split("\n").collect::<Vec<&str>>()[0];
+            let mut row = row.chars().take(80).collect::<String>();
+            let lines = line.split("\n").count();
+            if lines > 1 {
+                row = format!("{} \t@C3722304768({} more lines in buffer...)", row, lines);
+            }
+
+            let data = line.clone();
+
+            // add the item to the browser, text is just short representation and data is the actual CB data
+            b.add_with_data(&row, data);
+            b.set_callback(move |b| {
+                // format rows, on selection
+                format_rows(b);
+                if app::event_mouse_button() == app::MouseButton::Right {
+                    unsafe {
+                        let idx: i32 = b.value();
+                        let d = b.data::<String>(idx);
+                        if let Some(d) = d {
+                            if !d.contains("\n") {
+                                return;
+                            }
+
+                            let popup = MyPopup::new(&d.to_string(), app::event_x_root(), app::event_y_root());
+                            let mut w = popup.window;
+                            w.handle(move |w, ev| {
+                                if ev == enums::Event::Unfocus{
+                                    w.hide();
+                                    true
+                                } else {
+                                    false
+                                }
+                            });
+                        }
+                    }
+                } else if app::event_clicks_num() > 0 { // on double click, copy the selected item to the clipboard
+                    unsafe {
+                        let mut ctx: ClipboardContext = ClipboardProvider::new().unwrap();
+                        let idx: i32 = b.value();
+                        let d = b.data::<String>(idx);
+                        ctx.set_contents(d.expect("").to_string()).unwrap();
+                    }
+                }
+            });
+        }
+        b.select(1);
+        let row = b.text(1).unwrap().replace("@C3148545792", "@C879871488");
+        b.set_text(1, &row);
+        b.handle(move |b, _ev| {
+            if app::event_key() == Key::from_char('p') {
+                false
+            } else {
+                let mut cb_item_preview_win = b.parent().unwrap();
+                if app::event_key() == Key::Escape {
+                    cb_item_preview_win.hide();
+                    let mut main_win = app::first_window().unwrap();
+                    main_win.take_focus().unwrap();
+                    false
+                } else {
+                    true
+                }}
+        });
         window.end();
         window.show();
         Self { window }
     }
 }
 
+// format rows, on selection, colorize the selected row
 fn format_rows(b: &mut browser::HoldBrowser) {
     for i in 1..b.size()+1 {
         let row = b.text(i).unwrap().replace("@C879871488","@C3148545792");
