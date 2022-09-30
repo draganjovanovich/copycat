@@ -20,6 +20,7 @@ const WIN_W: i32 = 800;
 const WIN_H: i32 = 400;
 
 fn main() {
+    let mut ctrl = false;
     let mut gg = 0;
     let app = app::App::default().with_scheme(app::Scheme::Gtk);
     app::background2(48, 48, 63);
@@ -67,9 +68,11 @@ fn main() {
 
             }
         }
-        if  ev == enums::Event::KeyDown && app::event_key() == Key::Escape {
-            app::quit();
-            std::process::exit(0);
+        if  ev == enums::Event::KeyDown {
+            if app::event_key() == Key::Escape || app::event_key() == Key::from_char('q') {
+                app::quit();
+                std::process::exit(0);
+            }
         }
         if  ev == enums::Event::KeyDown && app::event_key() ==  Key::from_char('p') {
             let idx: i32 = b.value();
@@ -172,19 +175,102 @@ fn main() {
 
     // app loop, handle vim like motions for scrolling
     while app.wait() {
-        // get curently focused window
         let ev = app::event();
         if gg == 2 {
             gg = 0;
-            b.select(1);
-            format_rows(& mut b);
+            let l = app::focus();
+            if l.is_some() {
+                let w = l.unwrap();
+                if w.parent().unwrap() == b.parent().unwrap() {
+                    b.select(1);
+                    format_rows(& mut b);
+                } else {
+                    let widget = w.parent().unwrap().child(0).unwrap();
+                    let cb_item_preview_option = widget.window().unwrap().child(0).unwrap();
+                    let mut cb_item_preview_browser = unsafe { std::mem::transmute::<widget::Widget, browser::HoldBrowser>(cb_item_preview_option) };
+                    cb_item_preview_browser.select(1);
+                    format_rows(& mut cb_item_preview_browser);
+                }
+
+            }
         }
         if  ev == enums::Event::KeyDown && app::event_text() ==  "g" {
             gg += 1;
         }
         if  ev == enums::Event::KeyDown && app::event_text() ==  "G" {
-            b.select(b.size());
-            format_rows(& mut b);
+            let l = app::focus();
+            if l.is_some() {
+                let w = l.unwrap();
+                if w.parent().unwrap() == b.parent().unwrap() {
+                    b.select(b.size());
+                    format_rows(& mut b);
+                } else {
+                    let widget = w.parent().unwrap().child(0).unwrap();
+                    let cb_item_preview_option = widget.window().unwrap().child(0).unwrap();
+                    let mut cb_item_preview_browser = unsafe { std::mem::transmute::<widget::Widget, browser::HoldBrowser>(cb_item_preview_option) };
+                    cb_item_preview_browser.select(cb_item_preview_browser.size());
+                    format_rows(& mut cb_item_preview_browser);
+                }
+
+            }
+        }
+        if  ev == enums::Event::KeyDown && app::event_key() == Key::ControlL {
+            ctrl = true;
+        }
+        if  ev == enums::Event::KeyUp && app::event_key() == Key::ControlL {
+            ctrl = false;
+        }
+        if  ev == enums::Event::KeyDown && app::event_key() == Key::from_char('u') && ctrl {
+            let l = app::focus();
+            if l.is_some() {
+                let w = l.unwrap();
+                if w.parent().unwrap() == b.parent().unwrap() {
+                    let mut page = 24;
+                    if b.value() - 24 < 1 {
+                        page = b.value() - 1;
+                    }
+                    b.select(b.value() - page);
+                    format_rows(& mut b);
+                } else {
+                    let widget = w.parent().unwrap().child(0).unwrap();
+                    let cb_item_preview_option = widget.window().unwrap().child(0).unwrap();
+                    let mut cb_item_preview_browser = unsafe { std::mem::transmute::<widget::Widget, browser::HoldBrowser>(cb_item_preview_option) };
+                    let idx: i32 = cb_item_preview_browser.value();
+                    let mut page = 24;
+                    if cb_item_preview_browser.value() - 24 < 1 {
+                        page = cb_item_preview_browser.value() - 1;
+                    }
+                    cb_item_preview_browser.select(idx - page);
+                    format_rows(& mut cb_item_preview_browser);
+                }
+
+            }
+        }
+        if  ev == enums::Event::KeyDown && app::event_key() == Key::from_char('d') && ctrl {
+            let l = app::focus();
+            if l.is_some() {
+                let w = l.unwrap();
+                if w.parent().unwrap() == b.parent().unwrap() {
+                    let mut page = 24;
+                    if b.value() + 24 > b.size() {
+                        page = b.size() - b.value();
+                    }
+                    b.select(b.value() + page);
+                    format_rows(& mut b);
+                } else {
+                    let widget = w.parent().unwrap().child(0).unwrap();
+                    let cb_item_preview_option = widget.window().unwrap().child(0).unwrap();
+                    let mut cb_item_preview_browser = unsafe { std::mem::transmute::<widget::Widget, browser::HoldBrowser>(cb_item_preview_option) };
+                    let idx: i32 = cb_item_preview_browser.value();
+                    let mut page = 24;
+                    if cb_item_preview_browser.value() + 24 > cb_item_preview_browser.size() {
+                        page = cb_item_preview_browser.size() - cb_item_preview_browser.value();
+                    }
+                    cb_item_preview_browser.select(idx + page);
+                    format_rows(& mut cb_item_preview_browser);
+                }
+
+            }
         }
         if  ev == enums::Event::KeyDown && app::event_key() ==  Key::from_char('j') {
             let l = app::focus();
@@ -194,10 +280,8 @@ fn main() {
                     b.select(b.value() + 1);
                     format_rows(& mut b);
                 } else {
-                    // find browser in window
                     let widget = w.parent().unwrap().child(0).unwrap();
                     let cb_item_preview_option = widget.window().unwrap().child(0).unwrap();
-                    // cast b to browser
                     let mut cb_item_preview_browser = unsafe { std::mem::transmute::<widget::Widget, browser::HoldBrowser>(cb_item_preview_option) };
                     let idx: i32 = cb_item_preview_browser.value();
                     cb_item_preview_browser.select(idx + 1);
@@ -214,10 +298,8 @@ fn main() {
                     b.select(b.value() - 1);
                     format_rows(& mut b);
                 } else {
-                    // find browser in window
                     let widget = w.parent().unwrap().child(0).unwrap();
                     let cb_item_preview_option = widget.window().unwrap().child(0).unwrap();
-                    // cast b to browser
                     let mut cb_item_preview_browser = unsafe { std::mem::transmute::<widget::Widget, browser::HoldBrowser>(cb_item_preview_option) };
                     let idx: i32 = cb_item_preview_browser.value();
                     cb_item_preview_browser.select(idx - 1);
