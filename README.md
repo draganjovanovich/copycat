@@ -27,7 +27,7 @@ You can use this mode from inside of VIM, with some help of additional vim plugi
 ### Terminal emulator usage
 Open select menu from terminal with `<CTRL> + t`  
 Toggle preview of large CB items with key `p`  
-Navigate preview window with VIM like motions: `j,k, gg, G`
+Navigate preview window with VIM like motions: `j,k, gg, G`  
 Confirm and copy selection to cliboard with `Enter key`  
 **NOTE:** `You can customize keybinding for triggering copycat in terminal by editing ~/.zshrc file`  
 
@@ -38,7 +38,7 @@ Confirm and copy selection to cliboard with `Enter key` or `Mouse double left cl
 
 ### VIM usage
 You can use it in VIM with the help of this plugin:  
-[https://github.com/voldikss/vim-floaterm](vim-floatterm)
+[https://github.com/voldikss/vim-floaterm](vim-floatterm)  
 
 And add something like this into your vim config file:  
 `noremap <C-t> :FloatermNew --title=copycat --width=1.0 --disposable --wintype=float --position=bottom python /usr/local/bin/popup.py<CR>`
