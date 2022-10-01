@@ -2,7 +2,7 @@
 <img src="/logo.jpeg"  width="20%" height="20%"><br/>
 <sup>Produced with stable-diffusion<sup>
 
-## Clipboard(copy/paste) history buffer for terminal emulators and MAC OS gui environment usage.
+## Clipboard(copy/paste) history buffer for terminal emulators and MAC OS gui and VIM* environment usage.
 
 ### Rrequirements  
 - MACOS  
@@ -37,7 +37,7 @@ Toggle preview of large CB items with key `Mouse right click` or `key p`
 Navigate window with VIM like motions: `j, k, gg, G, C-u, C-d`  
 Confirm and copy selection to cliboard with `Enter key` or `Mouse double left click`   
 
-### VIM usage
+### *VIM usage
 You can use it in VIM with the help of this plugin:  
 [https://github.com/voldikss/vim-floaterm](vim-floatterm)  
 
