@@ -1,6 +1,7 @@
 # COPYCAT  
+<img src="/logo.jpeg"  width="20%" height="20%"><br/>
 
-## Clipboard buffer for terminal emulator and gui environment usage
+## Clipboard(copy/paste) history buffer for terminal emulators and MAC OS gui environment usage.
 
 ### Rrequirements  
 - MACOS  
