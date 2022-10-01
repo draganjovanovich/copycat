@@ -27,13 +27,14 @@ You can use this mode from inside of VIM, with some help of additional vim plugi
 ### TERMINAL emulator usage
 Open select menu from terminal with `<CTRL> + t`  
 Toggle preview of large CB items with key `p`  
-Navigate preview window with VIM like motions: `j, k, gg, G`  
+Navigate window with VIM like motions: `j, k, gg, G, C-u, C-d`  
 Confirm and copy selection to cliboard with `Enter key`  
 **NOTE:** `You can customize keybinding for triggering copycat in terminal by editing ~/.zshrc file`  
 
 ### GUI usage
 Open select menu with `F1 key` it's not remapable for now  
-Toggle preview of large CB items with key `Mouse right click`  
+Toggle preview of large CB items with key `Mouse right click` or `key p`   
+Navigate window with VIM like motions: `j, k, gg, G, C-u, C-d`  
 Confirm and copy selection to cliboard with `Enter key` or `Mouse double left click`   
 
 ### VIM usage
