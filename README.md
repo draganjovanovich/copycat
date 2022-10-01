@@ -24,7 +24,7 @@ You can use this mode from wherever you are in the macos gui currently, for exam
 You can use this mode from inside of VIM, with some help of additional vim plugin mentioned in the description below  
 
 
-### Terminal emulator usage
+### TERMINAL emulator usage
 Open select menu from terminal with `<CTRL> + t`  
 Toggle preview of large CB items with key `p`  
 Navigate preview window with VIM like motions: `j, k, gg, G`  
