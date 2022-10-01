@@ -22,7 +22,7 @@ fn main() {
 
     // spawn new thread
     let hook = Hook::new().unwrap();
-    hook.register(KeyCode::F1, || {
+    hook.register(KeyCode::ShiftLeft, || {
             std::process::Command::new("/usr/local/bin/popup").spawn().unwrap();
         }).expect("Failed to register hotkey");
 
