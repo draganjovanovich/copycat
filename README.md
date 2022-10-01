@@ -9,7 +9,7 @@
 - ZSH  
 - Python3  
 
-**NOTE:** `It's possible to use bash instead of zsh, but with manual tweaking of .bashrc file.`  
+**NOTE:** `It's possible to use bash instead of zsh, but it will require manual tweaking of .bashrc file.`  
 
 ### Instalation  
 
