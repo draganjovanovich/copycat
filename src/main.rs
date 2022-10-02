@@ -10,7 +10,8 @@ use livesplit_hotkey::Hook;
 use livesplit_hotkey::KeyCode;
 
 fn main() {
-
+    let mut ctrl_times_pressed = 0;
+    let mut ctrl_timespan_pressed : std::time::Instant = std::time::Instant::now();
     let mut last_line = String::new();
     let path = dirs::home_dir().unwrap().join(".copycat");
     let mut file = OpenOptions::new ()
@@ -20,11 +21,22 @@ fn main() {
         .open(path)
         .unwrap();
 
-    // spawn new thread
     let hook = Hook::new().unwrap();
-    hook.register(KeyCode::F1, || {
-            std::process::Command::new("/usr/local/bin/popup").spawn().unwrap();
-        }).expect("Failed to register hotkey");
+    hook.register(KeyCode::ControlLeft, move || {
+        let now = std::time::Instant::now();
+        // This is debouncer for Ctrl key, because hook fires twice on key press, and we cannot
+        // filter it out in the hook itself.
+        if now - ctrl_timespan_pressed > std::time::Duration::from_millis(500) {
+            ctrl_times_pressed = 0;
+        } else {
+            ctrl_times_pressed += 1;
+            if ctrl_times_pressed == 2 {
+                ctrl_times_pressed = 0;
+                std::process::Command::new("/usr/local/bin/popup").spawn().unwrap();
+            }
+        }
+        ctrl_timespan_pressed = now;
+    }).expect("Failed to register hotkey");
 
     loop {
         let mut ctx : ClipboardContext = ClipboardProvider::new().unwrap();
