@@ -2,7 +2,7 @@
 <img src="/logo.jpeg"  width="20%" height="20%"><br/>
 <sup>Produced with stable-diffusion<sup>
 
-## Clipboard(copy/paste) history buffer for terminal emulators and MAC OS gui and VIM* environment usage.
+## Clipboard (copy/paste) history buffer for terminal emulators, MAC OS gui and VIM* environment usage.
 
 ### Rrequirements  
 - MACOS  
