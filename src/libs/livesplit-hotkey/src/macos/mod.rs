@@ -86,7 +86,6 @@ impl Drop for Hook {
 impl Hook {
     /// Creates a new hook.
     pub fn new() -> Result<Self> {
-        let ctrl_hold_duration = std::time::Duration::from_millis(0);
         let hotkeys = Arc::new(Mutex::new(HashMap::new()));
         let thread_hotkeys = hotkeys.clone();
 
