@@ -186,7 +186,6 @@ unsafe extern "C" fn callback(
     }
 
     let key_code = cg::CGEventGetIntegerValueField(event, EventField::KeyboardEventKeycode);
-    println!("key_code: {}", key_code);
     let key_code = match key_code {
         0x00 => KeyCode::KeyA,
         0x01 => KeyCode::KeyS,

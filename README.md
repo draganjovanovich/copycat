@@ -32,7 +32,7 @@ Confirm and copy selection to cliboard with `Enter key`
 **NOTE:** `You can customize keybinding for triggering copycat in terminal by editing ~/.zshrc file`  
 
 ### GUI usage
-Open select menu with `Double press CTRL key` it's not remapable for now  
+Open select menu with `Double press Left Alt key` it's not remapable for now  
 Toggle preview of large CB items with key `Mouse right click` or `key p`   
 Navigate window with VIM like motions: `j, k, gg, G, C-u, C-d`  
 Confirm and copy selection to cliboard with `Enter key` or `Mouse double left click`   
