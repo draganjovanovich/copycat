@@ -26,7 +26,7 @@ cargo build --release --bins
 cd ../../
 pip install -r requirements.txt
 
-launchctl remove com.copycat.meraxes
+launchctl remove com.copycat.gagleto
 
 sudo touch ~/.copycat
 sudo chown $(whoami) ~/.copycat
@@ -38,13 +38,13 @@ sudo chown $(whoami) /usr/local/bin/popup
 sudo cp -r ./popup/popup.py /usr/local/bin/
 sudo chown $(whoami) /usr/local/bin/popup.py
 
-sudo bash -c 'cat <<EOIPFW >> ~/Library/LaunchAgents/com.copycat.meraxes.plist
+sudo bash -c 'cat <<EOIPFW >> ~/Library/LaunchAgents/com.copycat.gagleto.plist
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
  <key>Label</key>
- <string>com.copycat.meraxes</string>
+ <string>com.copycat.gagleto</string>
  <key>ProgramArguments</key>
  <array>
   <string>/usr/local/bin/copycat</string>
@@ -58,11 +58,11 @@ sudo bash -c 'cat <<EOIPFW >> ~/Library/LaunchAgents/com.copycat.meraxes.plist
 </dict>
 </plist>
 EOIPFW' 
-sudo chmod 640 ~/Library/LaunchAgents/com.copycat.meraxes.plist
-sudo chown $(whoami) ~/Library/LaunchAgents/com.copycat.meraxes.plist
+sudo chmod 640 ~/Library/LaunchAgents/com.copycat.gagleto.plist
+sudo chown $(whoami) ~/Library/LaunchAgents/com.copycat.gagleto.plist
 
-if ! launchctl list | grep -q com.copycat.meraxes; then
-  launchctl load ~/Library/LaunchAgents/com.copycat.meraxes.plist
+if ! launchctl list | grep -q com.copycat.gagleto; then
+  launchctl load ~/Library/LaunchAgents/com.copycat.gagleto.plist
 fi
 
 python_exec=$(which python3)
