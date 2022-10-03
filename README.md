@@ -19,7 +19,7 @@ There are 3 possible modes of usage:
 - **Terminal emulator**:  
 You can use this mode when you are inside of the terminal and you want to access CB history directly inside of terminal window, without leaving terminal.
 - **GUI**:  
-You can use this mode from wherever you are in the macos gui currently, for example you are in Chrome, just press key F1 ...  
+You can use this mode from wherever you are in the macos gui currently, for example you are in Chrome, just Double press Left Alt key ...  
 - **VIM**:  
 You can use this mode from inside of VIM, with some help of additional vim plugin mentioned in the description below  
 
