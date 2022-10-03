@@ -1,5 +1,5 @@
 # COPYCAT  
-<img src="/logo.jpeg"  width="35%" height="34%"><br/>
+<img src="/logo.jpeg"  width="30%" height="30%"><br/>
 <sup>Produced with stable-diffusion<sup>
 
 ## Clipboard (copy/paste) history buffer for terminal emulators, MAC OS gui and VIM* environment usage.
