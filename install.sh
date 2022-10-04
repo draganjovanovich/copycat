@@ -3,7 +3,8 @@
 # check if we have rust installed
 if ! command -v rustc &> /dev/null
 then
-    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+    echo "rustc is required, please install it: curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh"
+    exit
 fi
 
 # check if user have python3
@@ -13,10 +14,10 @@ then
     exit
 fi
 
-# check if user have pip installed
-if ! command -v pip &> /dev/null
+# check if user have pip3 installed
+if ! command -v pip3 &> /dev/null
 then
-    echo "pip is required, please install it: brew install pip"
+    echo "pip3 is required, please install it: brew install python"
     exit
 fi
 
@@ -81,6 +82,10 @@ if ! grep -q "copycat_popup" ~/.zshrc; then
 
     bindkey '^T' copycat_popup
     " >> ~/.zshrc
-    source ~/.zshrc
 fi
+
+source ~/.zshrc
+
+# please restart your terminal if needed
+echo "Please restart your terminal if ctrl+t does not work, or run: source ~/.zshrc"
 
