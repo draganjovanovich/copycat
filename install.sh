@@ -25,7 +25,7 @@ cargo build --release --bins
 cd popup/popup
 cargo build --release --bins
 cd ../../
-pip install -r requirements.txt
+pip3 install -r requirements.txt
 
 launchctl remove com.copycat.gagleto
 
