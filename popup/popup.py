@@ -46,7 +46,7 @@ class Choice:
         lines = [line.replace('\t', ' ') for line in lines]
         # prepend one space for each line
         lines = [' ' + line for line in lines]
-        # ansi escape codes take up place...
+        # ansi escape codes take up space...
         max_len = width - 2
         # if max_len + 10 > os.get_terminal_size().columns:
         # max_len = os.get_terminal_size().columns - 5
