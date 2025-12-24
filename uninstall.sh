@@ -1,10 +1,17 @@
 #!/bin/zsh
 
+launchctl bootout gui/$(id -u)/com.copycat.gagleto 2>/dev/null || launchctl remove com.copycat.gagleto 2>/dev/null || true
 
-sudo rm ~/.copycat
-sudo rm  /usr/local/bin/copycat
-sudo rm  /usr/local/bin/popup
-sudo rm  /usr/local/bin/popup.py
-sudo rm ~/Library/LaunchAgents/com.copycat.gagleto.plist
+pkill -9 -f "/usr/local/bin/copycat" 2>/dev/null || true
+pkill -9 -f "/usr/local/bin/popup" 2>/dev/null || true
 
-launchctl remove com.copycat.gagleto
+rm -f ~/.copycat
+sudo rm -f /usr/local/bin/copycat
+sudo rm -f /usr/local/bin/popup
+sudo rm -f /usr/local/bin/popup.py
+rm -f ~/Library/LaunchAgents/com.copycat.gagleto.plist
+
+echo ""
+echo "NOTE: You may want to remove 'copycat' from:"
+echo "  System Settings > Privacy & Security > Accessibility"
+echo ""
